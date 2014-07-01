@@ -25,9 +25,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 		totalcentavos += coin.getValue();
 		fac.getDisplay().info("Total: US$ " + totalcentavos/100 + "." + totalcentavos%100 );
 		}
+
+	public void cancel() {
+		if(this.totalcentavos == 0){
+			throw new CoffeeMachineException("Não tem moedas inseridas");
+			}
 	
 	
-	
-	
-	
+		}	
 }
