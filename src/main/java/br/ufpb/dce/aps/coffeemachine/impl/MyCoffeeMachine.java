@@ -18,8 +18,6 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 	public void insertCoin(Coin coin) {
 		totalcentavos += coin.getValue();
 		fac.getDisplay().info("Total: US$ " + totalcentavos/100 + "." + totalcentavos%100 );
-		
-	}
-	
+		}
 	
 }
