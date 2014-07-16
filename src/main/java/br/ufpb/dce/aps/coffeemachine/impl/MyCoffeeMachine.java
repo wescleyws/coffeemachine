@@ -1,6 +1,7 @@
 package br.ufpb.dce.aps.coffeemachine.impl;
 
 import br.ufpb.dce.aps.coffeemachine.CoffeeMachine;
+import br.ufpb.dce.aps.coffeemachine.CoffeeMachineException;
 import br.ufpb.dce.aps.coffeemachine.Coin;
 import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
 import net.compor.frameworks.jcf.api.ComporFacade;
@@ -16,8 +17,17 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 	}
 
 	public void insertCoin(Coin coin) {
+		
+		if (coin == null){
+			throw new CoffeeMachineException("Moeda não aceita");
+		}
+		
 		totalcentavos += coin.getValue();
 		fac.getDisplay().info("Total: US$ " + totalcentavos/100 + "." + totalcentavos%100 );
 		}
+	
+	
+	
+	
 	
 }
