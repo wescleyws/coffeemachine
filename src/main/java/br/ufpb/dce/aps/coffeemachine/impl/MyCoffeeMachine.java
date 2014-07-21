@@ -43,20 +43,26 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			}
 	
 		fac.getDisplay().warn(Messages.CANCEL_MESSAGE);
+		removerCoin(fac);
+		fac.getDisplay().info(Messages.INSERT_COINS_MESSAGE);			
+
+		}
+	
+	private void removerCoin(ComponentsFactory factory) {
+		List<Integer> remover = new ArrayList<Integer>();
 
 		for (Coin coin : Coin.reverse()) {
 			for (int i = 0; i < this.coins.size(); i++) {
 				if (this.coins.get(i).equals(coin)) {
 					fac.getCashBox().release(coins.get(i));
-					this.coins.remove(i);
-					}
-			fac.getDisplay().info(Messages.INSERT_COINS_MESSAGE);
+					remover.add(new Integer(i));
+				}
 			}
-			
-			}
-			
+		}
+		this.coins.removeAll(remover);
+	}	
+	
+}				
 		
-	}
-}		
-				
+
 
