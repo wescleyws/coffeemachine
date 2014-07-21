@@ -32,7 +32,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 
 	public void cancel() {
 		if(this.totalcentavos == 0){
-			throw new CoffeeMachineException("Não tem moedas inseridas");
+			throw new CoffeeMachineException("Não possui moedas inseridas");
 			}
 	
 		fac.getDisplay().warn(Messages.CANCEL_MESSAGE);
