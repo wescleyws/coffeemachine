@@ -1,5 +1,7 @@
 package br.ufpb.dce.aps.coffeemachine.impl;
 
+import static org.mockito.Matchers.anyDouble;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,10 @@ import br.ufpb.dce.aps.coffeemachine.CoffeeMachine;
 import br.ufpb.dce.aps.coffeemachine.CoffeeMachineException;
 import br.ufpb.dce.aps.coffeemachine.Coin;
 import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
+import br.ufpb.dce.aps.coffeemachine.Dispenser;
+import br.ufpb.dce.aps.coffeemachine.Display;
+import br.ufpb.dce.aps.coffeemachine.Drink;
+import br.ufpb.dce.aps.coffeemachine.DrinkDispenser;
 import br.ufpb.dce.aps.coffeemachine.Messages;
 import net.compor.frameworks.jcf.api.ComporFacade;
 
@@ -16,12 +22,14 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 	private int totalcentavos = 0;
 	private ComponentsFactory fac;
 	private CashBox box; 
+	private Drink drinkSelect;
 	
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		fac = factory;
 		fac.getDisplay().info("Insert coins and select a drink!");
 		box = fac.getCashBox();
 		this.coins = new ArrayList<Coin>();
+		
 	}
 
 	public void insertCoin(Coin coin) {
@@ -42,9 +50,10 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			throw new CoffeeMachineException("Não possui moedas inseridas");
 			}
 	
-		fac.getDisplay().warn(Messages.CANCEL_MESSAGE);
+		fac.getDisplay().warn(Messages.CANCEL);
 		removerCoin(fac);
-		fac.getDisplay().info(Messages.INSERT_COINS_MESSAGE);			
+		fac.getDisplay().info(Messages.INSERT_COINS);
+
 
 		}
 	
@@ -60,9 +69,35 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			}
 		}
 		this.coins.removeAll(remover);
+	}
+
+	
+		public void select(Drink drink) {
+		if (drinkSelect.BLACK == drink){
+			fac.getCupDispenser().contains(1);
+			fac.getWaterDispenser().contains(0.5);
+			fac.getCoffeePowderDispenser().contains(2.5);
+			
+			fac.getDisplay().info(Messages.MIXING);
+			fac.getCoffeePowderDispenser().release(1.5);
+			fac.getWaterDispenser().release(2.5);
+
+			fac.getDisplay().info(Messages.RELEASING);
+			fac.getCupDispenser().release(1);
+			fac.getDrinkDispenser().release(anyDouble());
+			fac.getDisplay().info(Messages.TAKE_DRINK);
+			
+			fac.getDisplay().info(Messages.INSERT_COINS);
+			
+			
+		}
 	}	
 	
-}				
+		
+}
+	
+		
+				
 		
 
 
