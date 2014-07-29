@@ -111,9 +111,10 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			fac.getDisplay().info(Messages.TAKE_DRINK);
 		
 			fac.getDisplay().info(Messages.INSERT_COINS);
+			
+			coins.clear();
 		
-				
-	}	
+		}	
 	
 		
 }
