@@ -77,19 +77,19 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			
 			switch (drink){
 			
-			case BLACK :
-				
-				fac.getCupDispenser().contains(1); 
-				fac.getWaterDispenser().contains(1.5);
-			
-				if(!fac.getCoffeePowderDispenser().contains(1.2)){
-					fac.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
-					removerCoin(fac);
-					fac.getDisplay().info(Messages.INSERT_COINS);
+		case BLACK:
 
-						return;	}
-			
-				
+			fac.getCupDispenser().contains(1);
+			fac.getWaterDispenser().contains(1.5);
+
+			if (!fac.getCoffeePowderDispenser().contains(1.2)) {
+				fac.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
+				removerCoin(fac);
+				fac.getDisplay().info(Messages.INSERT_COINS);
+
+				return;
+			}
+
 			fac.getDisplay().info(Messages.MIXING);
 			fac.getCoffeePowderDispenser().release(1.5);
 			fac.getWaterDispenser().release(2.5);
@@ -98,9 +98,9 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			fac.getCupDispenser().release(1);
 			fac.getDrinkDispenser().release(anyDouble());
 			fac.getDisplay().info(Messages.TAKE_DRINK);
-			
+
 			fac.getDisplay().info(Messages.INSERT_COINS);
-			
+
 			break;
 
 			case BLACK_SUGAR : 
@@ -108,7 +108,14 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			fac.getCupDispenser().contains(1);
 			fac.getWaterDispenser().contains(0.2);
 			fac.getCoffeePowderDispenser().contains(2.3);
-			fac.getSugarDispenser().contains(1.4);
+			
+			if(!fac.getSugarDispenser().contains(1.2)){
+				fac.getDisplay().warn(Messages.OUT_OF_SUGAR);
+				removerCoin(fac);
+				fac.getDisplay().info(Messages.INSERT_COINS);
+
+				return;
+			}
 		
 			fac.getDisplay().info(Messages.MIXING);
 			fac.getCoffeePowderDispenser().release(1.2);
