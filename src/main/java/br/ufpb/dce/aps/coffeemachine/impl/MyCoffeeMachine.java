@@ -73,13 +73,23 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 
 	
 		public void select(Drink drink) {
+			
+			
 			switch (drink){
+			
 			case BLACK :
 				
-			fac.getCupDispenser().contains(1);
-			fac.getWaterDispenser().contains(0.5);
-			fac.getCoffeePowderDispenser().contains(2.5);
+				fac.getCupDispenser().contains(1); 
+				fac.getWaterDispenser().contains(1.5);
 			
+				if(!fac.getCoffeePowderDispenser().contains(1.2)){
+					fac.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
+					removerCoin(fac);
+					fac.getDisplay().info(Messages.INSERT_COINS);
+
+						return;	}
+			
+				
 			fac.getDisplay().info(Messages.MIXING);
 			fac.getCoffeePowderDispenser().release(1.5);
 			fac.getWaterDispenser().release(2.5);
