@@ -1,3 +1,4 @@
+
 package br.ufpb.dce.aps.coffeemachine;
 
 import br.ufpb.dce.aps.coffeemachine.impl.MyCoffeeMachine;

@@ -18,17 +18,19 @@ import br.ufpb.dce.aps.coffeemachine.Messages;
 import net.compor.frameworks.jcf.api.ComporFacade;
 
 public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
-	private List<Coin> coins;
+	private List<Coin> coins, troco;
 	private int totalcentavos = 0;
 	private ComponentsFactory fac;
 	private CashBox box;
 	private Drink drink;
+	private final int CAFE = 35;
 
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		fac = factory;
 		fac.getDisplay().info("Insert coins and select a drink!");
 		box = fac.getCashBox();
 		this.coins = new ArrayList<Coin>();
+		this.troco = new ArrayList<Coin>();
 
 	}
 
@@ -44,6 +46,38 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		fac.getDisplay()
 				.info("Total: US$ " + totalcentavos / 100 + "." + totalcentavos
 						% 100);
+	}
+
+	public void retornaTroco(int change) {
+		for (Coin moeda : Coin.reverse()) {
+			while (moeda.getValue() <= change) {
+				fac.getCashBox().release(moeda);
+				this.troco.add(moeda);
+				change -= moeda.getValue();
+			}
+		}
+
+	}
+
+	public void planCoins(int troco) {
+		for (Coin moeda : Coin.reverse()) {
+			if (moeda.getValue() <= troco) {
+				this.fac.getCashBox().count(moeda);
+				troco -= moeda.getValue();
+			}
+		}
+	}
+
+	public int calculaTroco() {
+
+		int contador = 0;
+
+		for (Coin aux : this.coins) {
+			contador += aux.getValue();
+
+		}
+
+		return contador - this.CAFE;
 	}
 
 	public void cancel() {
@@ -169,6 +203,31 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			fac.getDisplay().info(Messages.INSERT_COINS);
 
 			break;
+
+		case WHITE_SUGAR:
+
+			fac.getCupDispenser().contains(1);
+			fac.getWaterDispenser().contains(1);
+			fac.getCoffeePowderDispenser().contains(1);
+			fac.getCreamerDispenser().contains(1.5);
+			fac.getSugarDispenser().contains(1.5);
+
+			planCoins(calculaTroco());
+
+			fac.getDisplay().info(Messages.MIXING);
+			fac.getCoffeePowderDispenser().release(1.9);
+			fac.getWaterDispenser().release(1.10);
+			fac.getCreamerDispenser().release(1.8);
+			fac.getSugarDispenser().release(5.0);
+
+			fac.getDisplay().info(Messages.RELEASING);
+			fac.getCupDispenser().release(1);
+			fac.getDrinkDispenser().release(0.9);
+			fac.getDisplay().info(Messages.TAKE_DRINK);
+
+			retornaTroco(calculaTroco());
+
+			fac.getDisplay().info(Messages.INSERT_COINS);
 
 		}
 
