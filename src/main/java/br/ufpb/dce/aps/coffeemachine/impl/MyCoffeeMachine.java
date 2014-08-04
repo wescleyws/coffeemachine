@@ -106,9 +106,15 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	}
 
 	public void select(Drink drink) {
-
 		switch (drink) {
 		case BLACK:
+
+			if (calculaTroco() < 0) {
+				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.removerCoin(fac);
+				fac.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
 
 			if (!fac.getCupDispenser().contains(1)) {
 				fac.getDisplay().warn(Messages.OUT_OF_CUP);
@@ -145,6 +151,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			break;
 
 		case BLACK_SUGAR:
+
+			if (calculaTroco() < 0) {
+				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.removerCoin(fac);
+				return;
+			}
 
 			if (!fac.getCupDispenser().contains(1)) {
 				fac.getDisplay().warn(Messages.OUT_OF_CUP);
@@ -185,6 +197,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		case WHITE:
 
+			if (calculaTroco() < 0) {
+				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.removerCoin(fac);
+				return;
+			}
+
 			fac.getCupDispenser().contains(1);
 			fac.getWaterDispenser().contains(1);
 			fac.getCoffeePowderDispenser().contains(1);
@@ -205,6 +223,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			break;
 
 		case WHITE_SUGAR:
+
+			if (calculaTroco() < 0) {
+				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.removerCoin(fac);
+				return;
+			}
 
 			fac.getCupDispenser().contains(1);
 			fac.getWaterDispenser().contains(1);
@@ -232,6 +256,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		}
 
 		coins.clear();
+
 	}
 
 }
