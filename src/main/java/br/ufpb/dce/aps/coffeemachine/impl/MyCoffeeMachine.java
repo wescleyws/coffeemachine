@@ -17,46 +17,46 @@ import br.ufpb.dce.aps.coffeemachine.DrinkDispenser;
 import br.ufpb.dce.aps.coffeemachine.Messages;
 import net.compor.frameworks.jcf.api.ComporFacade;
 
-public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
+public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	private List<Coin> coins;
 	private int totalcentavos = 0;
 	private ComponentsFactory fac;
-	private CashBox box; 
-	private Drink drinkSelect;
-	
+	private CashBox box;
+	private Drink drink;
+
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		fac = factory;
 		fac.getDisplay().info("Insert coins and select a drink!");
 		box = fac.getCashBox();
 		this.coins = new ArrayList<Coin>();
-		
+
 	}
 
 	public void insertCoin(Coin coin) {
-		
-		
-		if (coin == null){
+
+		if (coin == null) {
 			throw new CoffeeMachineException("Moeda não aceita");
 		}
-		
+
 		this.coins.add(coin);
-		
+
 		totalcentavos += coin.getValue();
-		fac.getDisplay().info("Total: US$ " + totalcentavos/100 + "." + totalcentavos%100 );
-		}
-		
+		fac.getDisplay()
+				.info("Total: US$ " + totalcentavos / 100 + "." + totalcentavos
+						% 100);
+	}
+
 	public void cancel() {
-		if(this.totalcentavos == 0){
+		if (this.totalcentavos == 0) {
 			throw new CoffeeMachineException("Não possui moedas inseridas");
-			}
-	
+		}
+
 		fac.getDisplay().warn(Messages.CANCEL);
 		removerCoin(fac);
 		fac.getDisplay().info(Messages.INSERT_COINS);
 
+	}
 
-		}
-	
 	private void removerCoin(ComponentsFactory factory) {
 		List<Integer> remover = new ArrayList<Integer>();
 
@@ -71,24 +71,24 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 		this.coins.removeAll(remover);
 	}
 
-	
-		public void select(Drink drink) {
-			
-		switch (drink){
+	public void select(Drink drink) {
+
+		switch (drink) {
 		case BLACK:
 
 			if (!fac.getCupDispenser().contains(1)) {
 				fac.getDisplay().warn(Messages.OUT_OF_CUP);
 				removerCoin(fac);
 				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;}
-			
-			if(!fac.getWaterDispenser().contains(1.2)){
+				return;
+			}
+
+			if (!fac.getWaterDispenser().contains(1.2)) {
 				fac.getDisplay().warn(Messages.OUT_OF_WATER);
 				removerCoin(fac);
 				fac.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				}
+			}
 
 			if (!fac.getCoffeePowderDispenser().contains(1.2)) {
 				fac.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
@@ -110,30 +110,31 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 
 			break;
 
-			case BLACK_SUGAR : 
-			
+		case BLACK_SUGAR:
+
 			if (!fac.getCupDispenser().contains(1)) {
-					fac.getDisplay().warn(Messages.OUT_OF_CUP);
-					removerCoin(fac);
-					fac.getDisplay().info(Messages.INSERT_COINS);
-					return;}
-			
-			if(!fac.getWaterDispenser().contains(1.2)){
+				fac.getDisplay().warn(Messages.OUT_OF_CUP);
+				removerCoin(fac);
+				fac.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
+
+			if (!fac.getWaterDispenser().contains(1.2)) {
 				fac.getDisplay().warn(Messages.OUT_OF_WATER);
 				removerCoin(fac);
 				fac.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				}
+			}
 			fac.getCoffeePowderDispenser().contains(2.3);
-			
-			if(!fac.getSugarDispenser().contains(1.2)){
+
+			if (!fac.getSugarDispenser().contains(1.2)) {
 				fac.getDisplay().warn(Messages.OUT_OF_SUGAR);
 				removerCoin(fac);
 				fac.getDisplay().info(Messages.INSERT_COINS);
 
 				return;
 			}
-		
+
 			fac.getDisplay().info(Messages.MIXING);
 			fac.getCoffeePowderDispenser().release(1.2);
 			fac.getWaterDispenser().release(2.2);
@@ -143,14 +144,13 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			fac.getCupDispenser().release(1);
 			fac.getDrinkDispenser().release(2.2);
 			fac.getDisplay().info(Messages.TAKE_DRINK);
-		
+
 			fac.getDisplay().info(Messages.INSERT_COINS);
-			
-			coins.clear();
-			
-			
-			case WHITE: 
-						
+
+			break;
+
+		case WHITE:
+
 			fac.getCupDispenser().contains(1);
 			fac.getWaterDispenser().contains(1);
 			fac.getCoffeePowderDispenser().contains(1);
@@ -169,17 +169,10 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine{
 			fac.getDisplay().info(Messages.INSERT_COINS);
 
 			break;
-				
-		
-		}	
-	
-		
+
+		}
+
+		coins.clear();
+	}
+
 }
-	
-}
-		
-
-				
-		
-
-
