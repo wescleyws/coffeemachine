@@ -51,6 +51,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	public void retornaTroco(int change) {
 		for (Coin moeda : Coin.reverse()) {
 			while (moeda.getValue() <= change) {
+				
 				fac.getCashBox().release(moeda);
 				this.troco.add(moeda);
 				change -= moeda.getValue();
@@ -59,13 +60,17 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	}
 
-	public void planCoins(int troco) {
+	public boolean  planCoins(int troco) {
 		for (Coin moeda : Coin.reverse()) {
-			if (moeda.getValue() <= troco) {
-				this.fac.getCashBox().count(moeda);
+			if (moeda.getValue() <= troco && this.fac.getCashBox().count(moeda) > 0) {
+				
 				troco -= moeda.getValue();
 			}
 		}
+		
+		return troco == 0;
+		
+		
 	}
 
 	public int calculaTroco() {
@@ -202,11 +207,22 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 				this.removerCoin(fac);
 				return;
 			}
-
+			
+						
 			fac.getCupDispenser().contains(1);
 			fac.getWaterDispenser().contains(1);
 			fac.getCoffeePowderDispenser().contains(1);
 			fac.getCreamerDispenser().contains(1.2);
+			
+			if (!planCoins(calculaTroco())){
+				fac.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+				this.removerCoin(fac);
+				fac.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
+			
+			
+			
 
 			fac.getDisplay().info(Messages.MIXING);
 			fac.getCoffeePowderDispenser().release(1.9);
