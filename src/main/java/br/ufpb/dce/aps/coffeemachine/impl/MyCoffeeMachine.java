@@ -25,6 +25,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	private Drink drink;
 	private final int CAFE = 35;
 
+
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		fac = factory;
 		fac.getDisplay().info("Insert coins and select a drink!");
@@ -32,6 +33,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		this.coins = new ArrayList<Coin>();
 		this.troco = new ArrayList<Coin>();
 
+		
 	}
 
 	public void insertCoin(Coin coin) {
@@ -69,8 +71,6 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		}
 		
 		return troco == 0;
-		
-		
 	}
 
 	public int calculaTroco() {
@@ -85,18 +85,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		return contador - this.CAFE;
 	}
 
-	public void cancel() {
-		if (this.totalcentavos == 0) {
-			throw new CoffeeMachineException("Não possui moedas inseridas");
-		}
-
-		fac.getDisplay().warn(Messages.CANCEL);
-		removerCoin(fac);
-		fac.getDisplay().info(Messages.INSERT_COINS);
-
-	}
-
-	private void removerCoin(ComponentsFactory factory) {
+	public void removerCoin(ComponentsFactory fac) {
 		List<Integer> remover = new ArrayList<Integer>();
 
 		for (Coin coin : Coin.reverse()) {
@@ -110,166 +99,42 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		this.coins.removeAll(remover);
 	}
 
+	public void cancel() {
+		if (this.totalcentavos == 0) {
+			throw new CoffeeMachineException("Não possui moedas inseridas");
+		}
+
+		fac.getDisplay().warn(Messages.CANCEL);
+		removerCoin(fac);
+		fac.getDisplay().info(Messages.INSERT_COINS);
+
+	}
+
+	
 	public void select(Drink drink) {
+		
+		Cafe cafe = null;
+		
 		switch (drink) {
+		
 		case BLACK:
-
-			if (calculaTroco() < 0) {
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
-				this.removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-
-			if (!fac.getCupDispenser().contains(1)) {
-				fac.getDisplay().warn(Messages.OUT_OF_CUP);
-				removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-
-			if (!fac.getWaterDispenser().contains(1.2)) {
-				fac.getDisplay().warn(Messages.OUT_OF_WATER);
-				removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-
-			if (!fac.getCoffeePowderDispenser().contains(1.2)) {
-				fac.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
-				removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-
-			fac.getDisplay().info(Messages.MIXING);
-			fac.getCoffeePowderDispenser().release(1.5);
-			fac.getWaterDispenser().release(2.5);
-
-			fac.getDisplay().info(Messages.RELEASING);
-			fac.getCupDispenser().release(1);
-			fac.getDrinkDispenser().release(anyDouble());
-			fac.getDisplay().info(Messages.TAKE_DRINK);
-
-			fac.getDisplay().info(Messages.INSERT_COINS);
-
+			cafe = new CafeBlack();
 			break;
 
 		case BLACK_SUGAR:
-
-			if (calculaTroco() < 0) {
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
-				this.removerCoin(fac);
-				return;
-			}
-
-			if (!fac.getCupDispenser().contains(1)) {
-				fac.getDisplay().warn(Messages.OUT_OF_CUP);
-				removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-
-			if (!fac.getWaterDispenser().contains(1.2)) {
-				fac.getDisplay().warn(Messages.OUT_OF_WATER);
-				removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-			fac.getCoffeePowderDispenser().contains(2.3);
-
-			if (!fac.getSugarDispenser().contains(1.2)) {
-				fac.getDisplay().warn(Messages.OUT_OF_SUGAR);
-				removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-
-				return;
-			}
-
-			fac.getDisplay().info(Messages.MIXING);
-			fac.getCoffeePowderDispenser().release(1.2);
-			fac.getWaterDispenser().release(2.2);
-			fac.getSugarDispenser().release(3.2);
-
-			fac.getDisplay().info(Messages.RELEASING);
-			fac.getCupDispenser().release(1);
-			fac.getDrinkDispenser().release(2.2);
-			fac.getDisplay().info(Messages.TAKE_DRINK);
-
-			fac.getDisplay().info(Messages.INSERT_COINS);
-
+			cafe = new CafeBlackSugar();
 			break;
 
 		case WHITE:
-
-			if (calculaTroco() < 0) {
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
-				this.removerCoin(fac);
-				return;
-			}
-			
-						
-			fac.getCupDispenser().contains(1);
-			fac.getWaterDispenser().contains(1);
-			fac.getCoffeePowderDispenser().contains(1);
-			fac.getCreamerDispenser().contains(1.2);
-			
-			if (!planCoins(calculaTroco())){
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
-				this.removerCoin(fac);
-				fac.getDisplay().info(Messages.INSERT_COINS);
-				return;
-			}
-			
-			
-			
-
-			fac.getDisplay().info(Messages.MIXING);
-			fac.getCoffeePowderDispenser().release(1.9);
-			fac.getWaterDispenser().release(1.10);
-			fac.getCreamerDispenser().release(1.8);
-
-			fac.getDisplay().info(Messages.RELEASING);
-			fac.getCupDispenser().release(1);
-			fac.getDrinkDispenser().release(0.9);
-			fac.getDisplay().info(Messages.TAKE_DRINK);
-
-			fac.getDisplay().info(Messages.INSERT_COINS);
-
+			cafe = new CafeWhite();
 			break;
 
 		case WHITE_SUGAR:
-
-			if (calculaTroco() < 0) {
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
-				this.removerCoin(fac);
-				return;
-			}
-
-			fac.getCupDispenser().contains(1);
-			fac.getWaterDispenser().contains(1);
-			fac.getCoffeePowderDispenser().contains(1);
-			fac.getCreamerDispenser().contains(1.5);
-			fac.getSugarDispenser().contains(1.5);
-
-			planCoins(calculaTroco());
-
-			fac.getDisplay().info(Messages.MIXING);
-			fac.getCoffeePowderDispenser().release(1.9);
-			fac.getWaterDispenser().release(1.10);
-			fac.getCreamerDispenser().release(1.8);
-			fac.getSugarDispenser().release(5.0);
-
-			fac.getDisplay().info(Messages.RELEASING);
-			fac.getCupDispenser().release(1);
-			fac.getDrinkDispenser().release(0.9);
-			fac.getDisplay().info(Messages.TAKE_DRINK);
-
-			retornaTroco(calculaTroco());
-
-			fac.getDisplay().info(Messages.INSERT_COINS);
-
+			cafe = new CafeWhiteSugar();
+			
 		}
+		
+		cafe.prepararCafe(this, fac);
 
 		coins.clear();
 
