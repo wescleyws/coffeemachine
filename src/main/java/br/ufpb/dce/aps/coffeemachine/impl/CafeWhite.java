@@ -11,8 +11,7 @@ public class CafeWhite extends Cafe{
 	protected Dispenser waterDispenser;
 	protected Dispenser coffeePowderDispenser;
 	protected Display display;
-	
-	public void instanciarDispenser(){
+		public void instanciarDispenser(){
 		
 		cupDispenser = fac.getCupDispenser();
 		waterDispenser = fac.getWaterDispenser();
@@ -39,10 +38,12 @@ public class CafeWhite extends Cafe{
 			fac.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
 			meucafe.removerCoin(fac);
 			fac.getDisplay().info(Messages.INSERT_COINS);
+
 			return;
 		}
 		
-		
+
+
 		fac.getDisplay().info(Messages.MIXING);
 		fac.getCoffeePowderDispenser().release(1.9);
 		fac.getWaterDispenser().release(1.10);
@@ -53,9 +54,13 @@ public class CafeWhite extends Cafe{
 		fac.getDrinkDispenser().release(0.9);
 		fac.getDisplay().info(Messages.TAKE_DRINK);
 
+		meucafe.retornaTroco(meucafe.calculaTroco());
+		
 		fac.getDisplay().info(Messages.INSERT_COINS);
 
 
 	}
+
+	
 
 }

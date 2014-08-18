@@ -18,13 +18,12 @@ import br.ufpb.dce.aps.coffeemachine.Messages;
 import net.compor.frameworks.jcf.api.ComporFacade;
 
 public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
-	private List<Coin> coins, troco;
+	private List<Coin> coins, troco, trocor;
 	private int totalcentavos = 0;
 	private ComponentsFactory fac;
 	private CashBox box;
 	private Drink drink;
 	private final int CAFE = 35;
-
 
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		fac = factory;
@@ -32,8 +31,8 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		box = fac.getCashBox();
 		this.coins = new ArrayList<Coin>();
 		this.troco = new ArrayList<Coin>();
+		this.trocor = new ArrayList<Coin>();
 
-		
 	}
 
 	public void insertCoin(Coin coin) {
@@ -51,25 +50,24 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	}
 
 	public void retornaTroco(int change) {
-		for (Coin moeda : Coin.reverse()) {
-			while (moeda.getValue() <= change) {
-				
+		for (Coin moeda : this.trocor) {
 				fac.getCashBox().release(moeda);
-				this.troco.add(moeda);
-				change -= moeda.getValue();
+			
 			}
-		}
 
 	}
 
-	public boolean  planCoins(int troco) {
+	public boolean planCoins(int troco) {
 		for (Coin moeda : Coin.reverse()) {
-			if (moeda.getValue() <= troco && this.fac.getCashBox().count(moeda) > 0) {
-				
-				troco -= moeda.getValue();
+			if (moeda.getValue() <= troco) {
+				int count = fac.getCashBox().count(moeda);
+				while (moeda.getValue() <= troco && count > 0) {
+					troco -= moeda.getValue();
+					this.trocor.add(moeda);
+				}
 			}
 		}
-		
+
 		return troco == 0;
 	}
 
@@ -110,13 +108,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	}
 
-	
 	public void select(Drink drink) {
-		
+
 		Cafe cafe = null;
-		
+
 		switch (drink) {
-		
+
 		case BLACK:
 			cafe = new CafeBlack();
 			break;
@@ -131,9 +128,9 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		case WHITE_SUGAR:
 			cafe = new CafeWhiteSugar();
-			
+
 		}
-		
+
 		cafe.prepararCafe(this, fac);
 
 		coins.clear();
