@@ -14,9 +14,8 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	private ComponentsFactory factory;
 	private ArrayList<Coin> moedas;
-	private int[] vetorTroco = new int[6];
-	private int cedulas = 0;
-	private int centavos = 0;
+	private int[] troco = new int[6];
+	private int totalcentavos = 0;
 	boolean condicao = true;
 	private final int CAFE = 35;
 	
@@ -40,28 +39,34 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	public void insertCoin(Coin coin) {
 		if (coin == null) {
-			throw new CoffeeMachineException("Error: Sem Moedas");
+			throw new CoffeeMachineException("Moeda Não Aceita");
 		}
 		this.moedas.add(coin);
-		this.cedulas += coin.getValue() / 100;
-		this.centavos += coin.getValue() % 100;
-		this.factory.getDisplay().info(
-				"Total: US$ " + this.cedulas + "." + this.centavos);
+		totalcentavos += coin.getValue();
+		factory.getDisplay()
+				.info("Total: US$ " + totalcentavos / 100 + "." + totalcentavos
+						% 100);
 	}
 
+	
+	
+	
+	
+	
 	public void cancel() {
-		if (this.cedulas == 0 && this.centavos == 0) {
-			throw new CoffeeMachineException("Não houve moeda inserida");
+		if (this.totalcentavos == 0) {
+			throw new CoffeeMachineException("Não possui moedas inseridas");
 		}
+		
 		this.factory.getDisplay().warn(Messages.CANCEL);
-		this.devolveMoedas();
+		this.removerCoins();
 	}
 
 	private void limpaMoedas() {
 		this.moedas.clear();
 	}
 
-	private void devolveMoedas() {
+	private void removerCoins() {
 		for (Coin rev : Coin.reverse()) {
 			for (Coin aux : this.moedas) {
 				if (aux == rev) {
@@ -81,7 +86,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			if (rev.getValue() <= troco && factory.getCashBox().count(rev) > 0) {
 				while (rev.getValue() <= troco) {
 					troco -= rev.getValue();
-					this.vetorTroco[i]++;
+					this.troco[i]++;
 				}
 			}
 			i++;
@@ -89,7 +94,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		if (troco != 0) {
 			throw new CoffeeMachineException("");
 		}
-		return this.vetorTroco;
+		return this.troco;
 	}
 	private void releaseCoins(int[] quantCoin) {
 		for (int i = 0; i < quantCoin.length; i++) {
@@ -117,26 +122,26 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		if (calcularTroco() < 0) {
 			this.factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
-			this.devolveMoedas();
+			removerCoins();
 			return;
 		}
 		condicao = (Boolean) requestService("verifyDrinkType", drink);
 		if (!condicao) {
-			devolveMoedas();
+			removerCoins();
 			return;
 		}
 
 		try {
-			this.vetorTroco = planejarTroco(calcularTroco());
+			troco = planejarTroco(calcularTroco());
 		} catch (Exception e) {
 			this.factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
-			this.devolveMoedas();
+			removerCoins();
 			return;
 		}
 		this.factory.getDisplay().info(Messages.MIXING);
 		requestService("selectDrinkType", drink);
 		requestService("releaseDrink");
-		releaseCoins(vetorTroco);
+		releaseCoins(troco);
 
 		this.limpaMoedas();
 		this.factory.getDisplay().info(Messages.INSERT_COINS);
