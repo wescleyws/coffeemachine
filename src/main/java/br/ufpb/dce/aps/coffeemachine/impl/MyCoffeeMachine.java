@@ -1,140 +1,144 @@
 package br.ufpb.dce.aps.coffeemachine.impl;
 
-import static org.mockito.Matchers.anyDouble;
-
 import java.util.ArrayList;
-import java.util.List;
 
-import br.ufpb.dce.aps.coffeemachine.CashBox;
+import net.compor.frameworks.jcf.api.ComporFacade;
 import br.ufpb.dce.aps.coffeemachine.CoffeeMachine;
 import br.ufpb.dce.aps.coffeemachine.CoffeeMachineException;
 import br.ufpb.dce.aps.coffeemachine.Coin;
 import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
-import br.ufpb.dce.aps.coffeemachine.Dispenser;
-import br.ufpb.dce.aps.coffeemachine.Display;
 import br.ufpb.dce.aps.coffeemachine.Drink;
-import br.ufpb.dce.aps.coffeemachine.DrinkDispenser;
 import br.ufpb.dce.aps.coffeemachine.Messages;
-import net.compor.frameworks.jcf.api.ComporFacade;
 
 public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
-	private List<Coin> coins, troco, trocor;
-	private int totalcentavos = 0;
-	private ComponentsFactory fac;
-	private CashBox box;
-	private Drink drink;
+
+	private ComponentsFactory factory;
+	private ArrayList<Coin> moedas;
+	private int[] vetorTroco = new int[6];
+	private int cedulas = 0;
+	private int centavos = 0;
+	boolean condicao = true;
 	private final int CAFE = 35;
+	
+
 
 	public MyCoffeeMachine(ComponentsFactory factory) {
-		fac = factory;
-		fac.getDisplay().info("Insert coins and select a drink!");
-		box = fac.getCashBox();
-		this.coins = new ArrayList<Coin>();
-		this.troco = new ArrayList<Coin>();
-		this.trocor = new ArrayList<Coin>();
+		this.factory = factory;
+		this.factory.getDisplay().info("Insert coins and select a drink!");
+		this.moedas = new ArrayList<Coin>();
+		this.addComponents();
+	}
 
+	@Override
+	protected void addComponents() {
+
+		this.add(new CoffeeBlack(this.factory));
+		this.add(new CoffeeBlackSugar(this.factory));
+		this.add(new CoffeeWhite(this.factory));
+		this.add(new CoffeeWhiteSugar(this.factory));
 	}
 
 	public void insertCoin(Coin coin) {
-
 		if (coin == null) {
-			throw new CoffeeMachineException("Moeda não aceita");
+			throw new CoffeeMachineException("Error: Sem Moedas");
 		}
-
-		this.coins.add(coin);
-
-		totalcentavos += coin.getValue();
-		fac.getDisplay()
-				.info("Total: US$ " + totalcentavos / 100 + "." + totalcentavos
-						% 100);
-	}
-
-	public void retornaTroco(int change) {
-		for (Coin moeda : this.trocor) {
-				fac.getCashBox().release(moeda);
-			
-			}
-
-	}
-
-	public boolean planCoins(int troco) {
-		for (Coin moeda : Coin.reverse()) {
-			if (moeda.getValue() <= troco) {
-				int count = fac.getCashBox().count(moeda);
-				while (moeda.getValue() <= troco && count > 0) {
-					troco -= moeda.getValue();
-					this.trocor.add(moeda);
-				}
-			}
-		}
-
-		return troco == 0;
-	}
-
-	public int calculaTroco() {
-
-		int contador = 0;
-
-		for (Coin aux : this.coins) {
-			contador += aux.getValue();
-
-		}
-
-		return contador - this.CAFE;
-	}
-
-	public void removerCoin(ComponentsFactory fac) {
-		List<Integer> remover = new ArrayList<Integer>();
-
-		for (Coin coin : Coin.reverse()) {
-			for (int i = 0; i < this.coins.size(); i++) {
-				if (this.coins.get(i).equals(coin)) {
-					fac.getCashBox().release(coins.get(i));
-					remover.add(new Integer(i));
-				}
-			}
-		}
-		this.coins.removeAll(remover);
+		this.moedas.add(coin);
+		this.cedulas += coin.getValue() / 100;
+		this.centavos += coin.getValue() % 100;
+		this.factory.getDisplay().info(
+				"Total: US$ " + this.cedulas + "." + this.centavos);
 	}
 
 	public void cancel() {
-		if (this.totalcentavos == 0) {
-			throw new CoffeeMachineException("Não possui moedas inseridas");
+		if (this.cedulas == 0 && this.centavos == 0) {
+			throw new CoffeeMachineException("Não houve moeda inserida");
 		}
+		this.factory.getDisplay().warn(Messages.CANCEL);
+		this.devolveMoedas();
+	}
 
-		fac.getDisplay().warn(Messages.CANCEL);
-		removerCoin(fac);
-		fac.getDisplay().info(Messages.INSERT_COINS);
+	private void limpaMoedas() {
+		this.moedas.clear();
+	}
 
+	private void devolveMoedas() {
+		for (Coin rev : Coin.reverse()) {
+			for (Coin aux : this.moedas) {
+				if (aux == rev) {
+					this.factory.getCashBox().release(aux);
+				}
+			}
+		}
+		this.limpaMoedas();
+		this.factory.getDisplay().info(Messages.INSERT_COINS);
+	}
+
+
+	
+	private int[] planejarTroco(int troco) throws CoffeeMachineException {
+		int i = 0;
+		for (Coin rev : Coin.reverse()) {
+			if (rev.getValue() <= troco && factory.getCashBox().count(rev) > 0) {
+				while (rev.getValue() <= troco) {
+					troco -= rev.getValue();
+					this.vetorTroco[i]++;
+				}
+			}
+			i++;
+		}
+		if (troco != 0) {
+			throw new CoffeeMachineException("");
+		}
+		return this.vetorTroco;
+	}
+	private void releaseCoins(int[] quantCoin) {
+		for (int i = 0; i < quantCoin.length; i++) {
+			int count = quantCoin[i];
+			Coin coin = Coin.reverse()[i];
+
+			for (int j = 1; j <= count; j++) {
+				this.factory.getCashBox().release(coin);
+			}
+		}
+	}
+	private int calcularTroco() {
+		int count = 0;
+		for (Coin rev : Coin.reverse()) {
+			for (Coin aux : this.moedas) {
+				if (aux == rev) {
+					count += aux.getValue();
+				}
+			}
+		}
+		return count - this.CAFE;
 	}
 
 	public void select(Drink drink) {
 
-		Cafe cafe = null;
-
-		switch (drink) {
-
-		case BLACK:
-			cafe = new CafeBlack();
-			break;
-
-		case BLACK_SUGAR:
-			cafe = new CafeBlackSugar();
-			break;
-
-		case WHITE:
-			cafe = new CafeWhite();
-			break;
-
-		case WHITE_SUGAR:
-			cafe = new CafeWhiteSugar();
-
+		if (calcularTroco() < 0) {
+			this.factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+			this.devolveMoedas();
+			return;
+		}
+		condicao = (Boolean) requestService("verifyDrinkType", drink);
+		if (!condicao) {
+			devolveMoedas();
+			return;
 		}
 
-		cafe.prepararCafe(this, fac);
+		try {
+			this.vetorTroco = planejarTroco(calcularTroco());
+		} catch (Exception e) {
+			this.factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+			this.devolveMoedas();
+			return;
+		}
+		this.factory.getDisplay().info(Messages.MIXING);
+		requestService("selectDrinkType", drink);
+		requestService("releaseDrink");
+		releaseCoins(vetorTroco);
 
-		coins.clear();
-
+		this.limpaMoedas();
+		this.factory.getDisplay().info(Messages.INSERT_COINS);
 	}
-
 }
