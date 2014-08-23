@@ -21,13 +21,17 @@ public CaldoDeSopaBoullion(ComponentsFactory factory) {
 				this.factory.getDisplay().warn(Messages.OUT_OF_WATER);
 				return false;
 			}
-			this.factory.getBouillonDispenser().contains(10);
+			
+			if(!this.factory.getBouillonDispenser().contains(10)){
+				this.factory.getDisplay().warn(Messages.OUT_OF_BOUILLON_POWDER);
+				return false;
+			}
+			
 			return true;
 			
 		}
 		@Service
 		public void releaseBouillon(){
-			//this.factory.getDisplay().warn(Messages.MIXING);
 			this.factory.getBouillonDispenser().release(10);
 			this.factory.getWaterDispenser().release(100);
 		}
