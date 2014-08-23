@@ -1,5 +1,7 @@
 package br.ufpb.dce.aps.coffeemachine.impl;
 
+import static org.mockito.Mockito.verify;
+
 import java.util.ArrayList;
 
 import net.compor.frameworks.jcf.api.ComporFacade;
@@ -19,15 +21,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	boolean condicao = true;
 	private int CAFE = 35;
 	
-
-
-	public MyCoffeeMachine(ComponentsFactory factory) {
-		this.factory = factory;
-		this.factory.getDisplay().info("Insert coins and select a drink!");
-		this.moedas = new ArrayList<Coin>();
-		this.addComponents();
-	}
-
+	
 	@Override
 	protected void addComponents() {
 
@@ -115,7 +109,6 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	}
 
 	public void select(Drink drink) {
-		
 		if(drink.equals(Drink.BOUILLON)){
 			this.CAFE = 25;
 		}
@@ -145,5 +138,17 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		this.limpaMoedas();
 		this.factory.getDisplay().info(Messages.INSERT_COINS);
+	}
+	
+	public void setFactory(ComponentsFactory factory) {
+		this.factory = factory;
+		this.factory.getDisplay().info(Messages.INSERT_COINS);
+		this.totalcentavos = 0;
+		this.moedas = new ArrayList<Coin>();
+		this.addComponents();
+			}
+	public void readBadge(int badgeCode) {
+		this.factory.getDisplay().info(Messages.BADGE_READ);
+
 	}
 }
