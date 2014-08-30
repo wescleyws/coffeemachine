@@ -21,7 +21,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	boolean condicao = true;
 	private int CAFE = 35;
 	private String modo = "";
-	
+	private boolean lerCacha = false, lerCoin = false;
 	
 	@Override
 	protected void addComponents() {
@@ -35,11 +35,15 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	public void insertCoin(Coin coin) {
 		
+		if (!this.lerCacha) {
+			this.lerCoin = true;
+			if (coin == null) {
+				throw new CoffeeMachineException("");
+			}
+		
 		if(this.modo.equals("cracha")){
 			factory.getDisplay().warn(Messages.CAN_NOT_INSERT_COINS);
-			liberarMoedasCracha(factory, coin);
-						return;
-					}
+			liberarMoedasCracha(factory, coin);  return;}
 		
 		if (coin == null) {
 			throw new CoffeeMachineException("Moeda Não Aceita");
@@ -49,6 +53,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		factory.getDisplay()
 				.info("Total: US$ " + totalcentavos / 100 + "." + totalcentavos
 						% 100);
+		}
 	}
 
 	private void liberarMoedasCracha(ComponentsFactory factory, Coin coin) {
@@ -165,10 +170,16 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		this.addComponents();
 			}
 	public void readBadge(int badgeCode) {
-		this.factory.getDisplay().info(Messages.BADGE_READ);
-		this.setModo("cracha");
+		if(!this.lerCoin){
+			this.factory.getDisplay().info(Messages.BADGE_READ);
+			this.setModo("cracha");
+		
+		}
+		else{
+            this.factory.getDisplay().warn(Messages.CAN_NOT_READ_BADGE);
+		}
+		}
 
 	}
 	
 	
-}
